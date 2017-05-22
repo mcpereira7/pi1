@@ -51,7 +51,7 @@ public class GameCore {
         //SE QUISER MOSTRAR MAIS INFORMAÇÕES DO POKEMON PARA O USUÁRIO MEXER AQUI.
         //lista todos os pokemons.
         for (pokemon object : listPokemon) {
-            System.out.printf(object.getId() + " - " + object.getName() + "\n");
+            System.out.printf("\t"+ object.getId() + " \t- " + object.getName() + "\t\n");
             //lista as habilidades do pokemon
             for (habilidade object1 : object.getHabilidade()) {
                 System.out.printf("     Habilidade: " + object1.getId() + " - " + object1.getName() + "\n");
