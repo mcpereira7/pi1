@@ -48,15 +48,21 @@ public class GameCore {
     }
 
     public static void ListarPokemon(List<pokemon> listPokemon) {
+        int cont = 0;
+        String concat = "", indent = "                    ", formatPokemon = "";
         //SE QUISER MOSTRAR MAIS INFORMAÇÕES DO POKEMON PARA O USUÁRIO MEXER AQUI.
         //lista todos os pokemons.
         for (pokemon object : listPokemon) {
-            System.out.printf(object.getId() + " - " + object.getName() + "\n");
-            //lista as habilidades do pokemon
-            for (habilidade object1 : object.getHabilidade()) {
-                System.out.printf("     Habilidade: " + object1.getId() + " - " + object1.getName() + "\n");
+            if (cont%7 == 0 && cont != 0){
+                System.out.println(concat);
+                concat = "";
             }
+            formatPokemon = object.getId() + " - " + object.getName();
+            concat += (formatPokemon + indent.substring(0, indent.length() - formatPokemon.length()));
+            cont++;
         }
+        //Imprime caso sobre registros fora da quantidade de colunas.
+        System.out.println(concat);
     }
 
     public static void BoasVindas() {
