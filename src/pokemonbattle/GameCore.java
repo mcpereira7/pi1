@@ -6,10 +6,12 @@ import java.util.Scanner;
 import entity.habilidade;
 import entity.pokemon;
 import dao.pokemonDAO;
+import java.util.Random;
 
 public class GameCore {
 
     public static void Menu() {
+        System.out.println(damage(50, 82, 80, 100, 1.5, 2));
         pokemon pok = new pokemon();
         //Arrumar esta lista.
         List<pokemon> timePokemon = new ArrayList<>();
@@ -23,7 +25,7 @@ public class GameCore {
         System.out.println("\n*** Lista Pokemon ***");
         ListarPokemon(listPokemon);
         System.out.println("\nOlá, Inicialmente Escolha o Seu Time de 6 Pokemon's. Boa Sorte!\n");
-        
+
         //Lista o Time Pokemon Escolhido
         timePokemon = TimePokemon(listPokemon);
         System.out.printf("\n *** Time Pokemon ***\n");
@@ -51,7 +53,7 @@ public class GameCore {
         //SE QUISER MOSTRAR MAIS INFORMAÇÕES DO POKEMON PARA O USUÁRIO MEXER AQUI.
         //lista todos os pokemons.
         for (pokemon object : listPokemon) {
-            System.out.printf("\t"+ object.getId() + " \t- " + object.getName() + "\t\n");
+            System.out.printf("\t" + object.getId() + " \t- " + object.getName() + "\t\n");
             //lista as habilidades do pokemon
             for (habilidade object1 : object.getHabilidade()) {
                 System.out.printf("     Habilidade: " + object1.getId() + " - " + object1.getName() + "\n");
@@ -101,21 +103,30 @@ public class GameCore {
         //verifica se o id do pokemon escolhido está na lista de pokemons.
         return listPokemon.stream().anyMatch((object) -> (object.getId() == idPokemon));
     }
-    
+
     public static String DesenharHp(int hpInicial, int hpAtual) {
-        int perc = ((hpAtual*100)/hpInicial);
-        int preto = (int) perc/10;
+        int perc = ((hpAtual * 100) / hpInicial);
+        int preto = (int) perc / 10;
         int branco = (10 - preto);
         String desenhoPreto = "", desenhoBranco = "";
-        
+
         for (int i = 1; i <= preto; i++) {
             desenhoPreto += "▮";
         }
-        
+
         for (int i = 1; i <= branco; i++) {
             desenhoBranco += "▯";
         }
-        
+
         return desenhoPreto + desenhoBranco;
     }
+
+    public static int damage(int levelPokemon, int atkPokemon, int atkGolpe, int defOponente, double stab, double efetivGolpe) {
+        Random rng = new Random();
+        int perc = rng.nextInt(15) + 85;
+        System.out.println(perc);
+        return (int) (((((2 * levelPokemon / 5 + 2) * atkPokemon * atkGolpe / defOponente) / 50) + 2) * stab * efetivGolpe * perc / 100);
+
+    }
+
 }
