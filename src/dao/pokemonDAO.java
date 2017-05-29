@@ -45,7 +45,9 @@ public class pokemonDAO {
                 pokemon.setSd(rs.getInt("sd"));
                 pokemon.setSpd(rs.getInt("spd"));
                 pokemon.setTotal(rs.getInt("total"));
-                pokemon.setType(rs.getString("description"));
+                //pokemon.setType(rs.getString("description"));
+                pokemon.setType(rs.getInt("type"));
+                pokemon.setRank(rs.getInt("rank"));
                 pokemon.setHabilidade(habilidade.findMovesPokemon(rs.getInt("id")));
                 listPokemon.add(pokemon);
             }
@@ -83,7 +85,9 @@ public class pokemonDAO {
             pokemon.setSd(rs.getInt("sd"));
             pokemon.setSpd(rs.getInt("spd"));
             pokemon.setTotal(rs.getInt("total"));
-            pokemon.setType(rs.getString("description"));
+            //pokemon.setType(rs.getString("description"));
+            pokemon.setType(rs.getInt("type"));
+            pokemon.setRank(rs.getInt("rank"));
             pokemon.setHabilidade(habilidade.findMovesPokemon(rs.getInt("id")));
 
         } catch (SQLException ex) {

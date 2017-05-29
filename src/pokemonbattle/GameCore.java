@@ -3,19 +3,20 @@ package pokemonbattle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import entity.habilidade;
 import entity.pokemon;
 import dao.pokemonDAO;
 import java.util.Random;
 
 public class GameCore {
 
+    static Scanner console = new Scanner(System.in);
+
     public static void Menu() {
-        System.out.println(damage(50, 82, 80, 100, 1.5, 2));
         pokemon pok = new pokemon();
-        //Arrumar esta lista.
         List<pokemon> timePokemon = new ArrayList<>();
+        List<pokemon> timePokemonIA = new ArrayList<>();
         List<pokemon> listPokemon = pok.findAll();
+
         BoasVindas();
 
         if (Inicio(listPokemon) == false) {
@@ -27,10 +28,16 @@ public class GameCore {
         System.out.println("\nOlá, Inicialmente Escolha o Seu Time de 6 Pokemon's. Boa Sorte!\n");
 
         //Lista o Time Pokemon Escolhido
-        timePokemon = TimePokemon(listPokemon);
+        timePokemon = TimePokemon(listPokemon, false);
         System.out.printf("\n *** Time Pokemon ***\n");
         ListarPokemon(timePokemon);
         System.out.println("\nParabéns! Este é o Seu Time Pokémon Escolhido.");
+
+        //Escolhe o Time Pokemon Do Adversário
+        timePokemonIA = TimePokemon(listPokemon, true);
+        ListarPokemon(timePokemonIA);
+
+        //Inicio da Batalha Pokemon
     }
 
     public static boolean Inicio(List<pokemon> listPokemon) {
@@ -55,7 +62,7 @@ public class GameCore {
         //SE QUISER MOSTRAR MAIS INFORMAÇÕES DO POKEMON PARA O USUÁRIO MEXER AQUI.
         //lista todos os pokemons.
         for (pokemon object : listPokemon) {
-            if (cont%7 == 0 && cont != 0){
+            if (cont % 7 == 0 && cont != 0) {
                 System.out.println(concat);
                 concat = "";
             }
@@ -78,8 +85,8 @@ public class GameCore {
                 + "           |__/                                                                                                                                                                   \n");
     }
 
-    public static List<pokemon> TimePokemon(List<pokemon> listPokemon) {
-        Scanner console = new Scanner(System.in);
+    public static List<pokemon> TimePokemon(List<pokemon> listPokemon, boolean IA) {
+        Random rng = new Random();
         boolean timeCompleto = false;
         int cont = 0, idPokemon = 0;
 
@@ -87,13 +94,17 @@ public class GameCore {
 
         while (!timeCompleto) {
             pokemonDAO pokemon = new pokemonDAO();
-            System.out.println("Escolha o Seu Pokémon de Número " + (cont + 1) + ": ");
-            idPokemon = console.nextInt();
+            if (IA) {
+                idPokemon = rng.nextInt(151) + 1;
+            } else {
+                System.out.println("Escolha o Seu Pokémon de Número " + (cont + 1) + ": ");
+                idPokemon = console.nextInt();
+            }
 
-            if (validaIdPokemon(listPokemon, idPokemon) == true) {
+            if (validaIdPokemon(listPokemon, idPokemon)) {
                 timePokemon.add(pokemon.findPokemon(idPokemon));
                 cont += 1;
-            } else {
+            } else if (!IA) {
                 System.out.println("POKEMON ESCOLHIDO NÃO EXISTE. DIGITE CONFORME O ID DA TABELA APRESENTADA.");
             }
 
@@ -134,5 +145,58 @@ public class GameCore {
         return (int) (((((2 * levelPokemon / 5 + 2) * atkPokemon * atkGolpe / defOponente) / 50) + 2) * stab * efetivGolpe * perc / 100);
 
     }
+    
+     public static int hp(int hpBasePokemon, int levelPokemon){
+        return (int) (((2 * hpBasePokemon) * levelPokemon/100 ) + 10 + levelPokemon);
+    }
 
+    public static void batalhaPokemon(List<pokemon> timePokemon, List<pokemon> timePokemonIA, List<pokemon> listPokemon) {
+        pokemon pokemonAtual = new pokemon();
+        pokemon pokemonAtualIA = new pokemon();
+        int[] dead = new int[5];
+        int[] deadIA = new int[5];
+        boolean vitoria = false;
+
+        do {
+            pokemonAtual = selecionarPokemon(timePokemon, dead);
+            pokemonAtualIA = selecionarPokemon(timePokemonIA, deadIA);
+        } while (vitoria);
+    }
+
+    public static pokemon selecionarPokemon(List<pokemon> timePokemon, int[] dead) {
+        pokemon pokemonEscolhido = new pokemon();
+        boolean escolhido = false;
+        System.out.println("Escolha o Pokemon Para a Batalha: ");
+        int pokemonId = console.nextInt();
+
+        while (escolhido) {
+            if (!verificaMorte(pokemonId, dead)) {
+                if (validaIdPokemon(timePokemon, pokemonId)) {
+                    escolhido = true;
+                    for (pokemon object : timePokemon) {
+                        if (object.getId() == pokemonId) {
+                            pokemonEscolhido.findPokemon(pokemonId);
+                        }
+                    }
+                } else {
+                    System.out.println("O Pokemon Escolhido Não Faz Parte do Seu Time, Tente Novamente.");
+                }
+            }else{
+                System.out.println("Este Pokemon Já Está Morto! Escolha Outro...");
+            }
+
+        }
+
+        return pokemonEscolhido;
+    }
+
+    public static boolean verificaMorte(int pokemonId, int[] dead) {
+        boolean morte = false;
+        for (int i = 0; i < dead.length; i++) {
+            if (dead[i] == pokemonId) {
+                morte = true;
+            }
+        }
+        return morte;
+    }
 }

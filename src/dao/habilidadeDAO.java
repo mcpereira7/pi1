@@ -38,7 +38,7 @@ public class habilidadeDAO {
                 move.setName(rs.getString("name"));
                 move.setPower(rs.getInt("power"));
                 move.setType(rs.getInt("type"));
-                move.setPp(rs.getInt("pp"));
+                //move.setPp(rs.getInt("pp"));
                 move.setAcc(rs.getInt("acc"));
                 listMove.add(move);
             }

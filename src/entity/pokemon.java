@@ -15,13 +15,14 @@ public class pokemon {
     private int sd;
     private int spd;
     private int total;
-    private String type;
+    private int type;
+    private int rank;
     private List<habilidade> habilidade;
     
     public pokemon() {
     }
 
-    public pokemon(int id, String name, int hp, int atk, int def, int sa, int sd, int spd, int total, String type, List<habilidade> habilidade) {
+    public pokemon(int id, String name, int hp, int atk, int def, int sa, int sd, int spd, int total, int type, int rank, List<habilidade> habilidade) {
         this.id = id;
         this.name = name;
         this.hp = hp;
@@ -32,10 +33,9 @@ public class pokemon {
         this.spd = spd;
         this.total = total;
         this.type = type;
+        this.rank = rank;
         this.habilidade = habilidade;
     }
-    
-    
 
     public List<habilidade> getHabilidade() {
         return habilidade;
@@ -117,17 +117,29 @@ public class pokemon {
         this.total = total;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
     
     public List<pokemon> findAll(){
         pokemonDAO pokemon = new pokemonDAO();
         return  pokemon.findAll();
     }
-
+    
+    public pokemon findPokemon(int pokemonId){
+        pokemonDAO pokemon = new pokemonDAO();
+        return  pokemon.findPokemon(pokemonId);
+    }
 }
