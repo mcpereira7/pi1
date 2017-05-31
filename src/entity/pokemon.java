@@ -21,7 +21,7 @@ public class pokemon {
     
     public pokemon() {
     }
-
+    
     public pokemon(int id, String name, int hp, int atk, int def, int sa, int sd, int spd, int total, int type, int rank, List<habilidade> habilidade) {
         this.id = id;
         this.name = name;

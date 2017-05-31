@@ -2,6 +2,7 @@ package entity;
 
 public class habilidade {
     private int id;
+    private int position;
     private String name;
     private int type;
     private int power;
@@ -18,6 +19,14 @@ public class habilidade {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public String getName() {
@@ -59,6 +68,4 @@ public class habilidade {
     public void setPp(int pp) {
         this.pp = pp;
     }
-    
-    
 }

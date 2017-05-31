@@ -21,6 +21,7 @@ public class habilidadeDAO {
     public List<habilidade> findMovesPokemon(int pokemonId){
         PreparedStatement stmt = null;
         ResultSet rs = null;
+        int cont = 0;
         
         String sql = "SELECT * FROM pokemonMoves INNER JOIN moveList ON pokemonMoves.moveId = moveList.id WHERE pokemonID = ?";
         
@@ -34,7 +35,9 @@ public class habilidadeDAO {
             while(rs.next()){
                 habilidade move = new habilidade();
                 
+                cont++;
                 move.setId(rs.getInt("id"));
+                move.setPosition(cont);
                 move.setName(rs.getString("name"));
                 move.setPower(rs.getInt("power"));
                 move.setType(rs.getInt("type"));

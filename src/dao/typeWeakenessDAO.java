@@ -22,7 +22,7 @@ public class typeWeakenessDAO {
 
         double power = 0;
 
-        String sql = "SELECT POWER FROM typeWeakeness WHERE typeAtk = ? and typeDef = ?";
+        String sql = "SELECT POWER FROM typeWeakness WHERE typeAtk = ? and typeDef = ?";
 
         try {
             stmt = cn.prepareStatement(sql);

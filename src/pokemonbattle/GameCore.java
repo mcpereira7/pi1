@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import entity.pokemon;
+import entity.habilidade;
+import entity.TypeWeakeness;
 import dao.pokemonDAO;
 import java.util.Random;
 
 public class GameCore {
 
     static Scanner console = new Scanner(System.in);
+    static Random rng = new Random();
 
     public static void Menu() {
         pokemon pok = new pokemon();
@@ -38,10 +41,10 @@ public class GameCore {
         ListarPokemon(timePokemonIA);
 
         //Inicio da Batalha Pokemon
+        batalhaPokemon(timePokemon, timePokemonIA, listPokemon);
     }
 
     public static boolean Inicio(List<pokemon> listPokemon) {
-        Scanner console = new Scanner(System.in);
         System.out.println("ESTA PREPARADO PARA ESTA AVENTURA?");
         System.out.println(" ---------        ---------");
         System.out.println("| 1 - SIM |      | 2 - NÃO |");
@@ -86,7 +89,6 @@ public class GameCore {
     }
 
     public static List<pokemon> TimePokemon(List<pokemon> listPokemon, boolean IA) {
-        Random rng = new Random();
         boolean timeCompleto = false;
         int cont = 0, idPokemon = 0;
 
@@ -145,43 +147,147 @@ public class GameCore {
         return (int) (((((2 * levelPokemon / 5 + 2) * atkPokemon * atkGolpe / defOponente) / 50) + 2) * stab * efetivGolpe * perc / 100);
 
     }
-    
-     public static int hp(int hpBasePokemon, int levelPokemon){
-        return (int) (((2 * hpBasePokemon) * levelPokemon/100 ) + 10 + levelPokemon);
+
+    public static int hp(int hpBasePokemon, int levelPokemon) {
+        return (int) (((2 * hpBasePokemon) * levelPokemon / 100) + 10 + levelPokemon);
     }
 
     public static void batalhaPokemon(List<pokemon> timePokemon, List<pokemon> timePokemonIA, List<pokemon> listPokemon) {
         pokemon pokemonAtual = new pokemon();
         pokemon pokemonAtualIA = new pokemon();
+        habilidade hab = new habilidade();
+        habilidade habIA = new habilidade();
+        TypeWeakeness typeWeak = new TypeWeakeness();
         int[] dead = new int[5];
         int[] deadIA = new int[5];
+        int hp, hpIA, hpInicial, hpInicialIA;
+        int contHab = 0;
+        int habID, habIDIA;
+        int damage, damageIA;
         boolean vitoria = false;
+        double stab, stabIA;
+        double efetiv, efetivIA;
 
         do {
             pokemonAtual = selecionarPokemon(timePokemon, dead);
             pokemonAtualIA = selecionarPokemon(timePokemonIA, deadIA);
+
+            hp = hp(pokemonAtual.getHp(), 50);
+            hpInicial = hp;
+            hpIA = hp(pokemonAtualIA.getHp(), 50);
+            hpInicialIA = hpIA;
+
+            BattleLog(pokemonAtual.getName(), pokemonAtualIA.getName(), hpInicial, hp, hpInicialIA, hpIA, 0, 0);
+
+            while (hp > 0 && hpIA > 0) {
+                habID = escolheHabilidade(pokemonAtual.getHabilidade(), false);
+                habIDIA = escolheHabilidade(pokemonAtualIA.getHabilidade(), true);
+
+                //Seleciona a habilidade que o usuário escolheu e guarda no objeto.
+                hab = selecionaHabilidade(habID, pokemonAtual.getHabilidade());
+                habIA = selecionaHabilidade(habIDIA, pokemonAtualIA.getHabilidade());
+
+                //STAB - Caso Tipo do pokemon seja igual ao tipo do golpe STAB = 1.5, se não STAB = 1
+                stab = calculaStab(pokemonAtual.getType(), hab.getType());
+                stabIA = calculaStab(pokemonAtualIA.getType(), habIA.getType());
+
+                efetiv = typeWeak.findWeakeness(pokemonAtual.getType(), pokemonAtualIA.getType());
+                efetivIA = typeWeak.findWeakeness(pokemonAtualIA.getType(), pokemonAtual.getType());
+
+                damage = damage(50, pokemonAtual.getAtk(), hab.getPower(), pokemonAtualIA.getDef(), stab, efetiv);
+                damageIA = damage(50, pokemonAtualIA.getAtk(), habIA.getPower(), pokemonAtual.getDef(), stabIA, efetivIA);
+
+                hp = hp - damage;
+                hpIA = hpIA - damageIA;
+
+                BattleLog(pokemonAtual.getName(), pokemonAtualIA.getName(), hpInicial, hp, hpInicialIA, hpIA, damage, damageIA);
+            }
+
         } while (vitoria);
+    }
+
+    public static habilidade selecionaHabilidade(int habililidadeID, List<habilidade> listHabPokemon) {
+        habilidade hab = new habilidade();
+        for (habilidade object : listHabPokemon) {
+            if (object.getPosition() == habililidadeID) {
+                hab = object;
+            }
+        }
+        return hab;
+    }
+
+    public static double calculaStab(int typePokemon, int typeAtk) {
+        if (typePokemon == typeAtk) {
+            return 1.5;
+        } else {
+            return 1;
+        }
+    }
+
+    public static int escolheHabilidade(List<habilidade> habList, boolean IA) {
+        int habilidade;
+        boolean escolhaValida = false;
+        //Lista as habilidades do pokemon na tela.
+        for (habilidade i : habList) {
+            System.out.printf("%d - %s \n", i.getPosition(), i.getName());
+        }
+
+        do {
+            if (!IA) {
+                System.out.println("Digite o ID da Habilidade: ");
+                habilidade = console.nextInt();
+            } else {
+                habilidade = rng.nextInt(habList.size()) + 1;
+            }
+            escolhaValida = !(habilidade > habList.size() || habilidade < 1);
+            if (!escolhaValida) {
+                System.out.println("ID de Habilidade INEXISTENTE, Escolha Novamente...");
+            }
+        } while (!escolhaValida);
+        return habilidade;
+    }
+
+    public static void BattleLog(String pokemon, String pokemonIA, int hpInicial, int hpAtual, int hpInicialIA, int hpAtualIA, int damage, int damageIA) {
+        if (damage != 0 || damageIA != 0) {
+            System.out.printf("Você Causou %d de Dano e Recebeu %d de Dano!", damage, damageIA);
+        }
+
+        System.out.println("");
+        System.out.println("");
+
+        System.out.printf("%s %d HP \n", pokemon, hpAtual);
+        System.out.println(DesenharHp(hpInicial, hpAtual));
+
+        System.out.println("");
+
+        System.out.printf("%s %d HP \n", pokemonIA, hpAtualIA);
+        System.out.println(DesenharHp(hpInicialIA, hpAtualIA));
+        
+        System.out.println("");
+        System.out.println("");
     }
 
     public static pokemon selecionarPokemon(List<pokemon> timePokemon, int[] dead) {
         pokemon pokemonEscolhido = new pokemon();
         boolean escolhido = false;
-        System.out.println("Escolha o Pokemon Para a Batalha: ");
-        int pokemonId = console.nextInt();
 
-        while (escolhido) {
+        while (!escolhido) {
+            System.out.println("Escolha o Pokemon Para a Batalha: ");
+            int pokemonId = console.nextInt();
+
             if (!verificaMorte(pokemonId, dead)) {
                 if (validaIdPokemon(timePokemon, pokemonId)) {
                     escolhido = true;
                     for (pokemon object : timePokemon) {
                         if (object.getId() == pokemonId) {
-                            pokemonEscolhido.findPokemon(pokemonId);
+                            pokemonEscolhido = pokemonEscolhido.findPokemon(pokemonId);
+                            break;
                         }
                     }
                 } else {
                     System.out.println("O Pokemon Escolhido Não Faz Parte do Seu Time, Tente Novamente.");
                 }
-            }else{
+            } else {
                 System.out.println("Este Pokemon Já Está Morto! Escolha Outro...");
             }
 

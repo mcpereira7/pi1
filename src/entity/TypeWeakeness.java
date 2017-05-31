@@ -1,5 +1,7 @@
 package entity;
 
+import dao.typeWeakenessDAO;
+
 public class TypeWeakeness {
 
     private int id;
@@ -8,7 +10,7 @@ public class TypeWeakeness {
     private int power;
 
     public TypeWeakeness() {
-   
+
     }
 
     public TypeWeakeness(int id, int typeAtk, int typeDef, int power) {
@@ -17,8 +19,6 @@ public class TypeWeakeness {
         this.typeDef = typeDef;
         this.power = power;
     }
-    
-    
 
     public int getId() {
         return id;
@@ -51,7 +51,9 @@ public class TypeWeakeness {
     public void setPower(int power) {
         this.power = power;
     }
-    
-    
 
+    public double findWeakeness(int typeAtk, int typeDef) {
+        typeWeakenessDAO typeWeakeness = new typeWeakenessDAO();
+        return typeWeakeness.findPower(typeAtk, typeDef);
+    }
 }
