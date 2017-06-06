@@ -29,8 +29,10 @@ public class typeWeakenessDAO {
             stmt.setInt(1, typeAtk);
             stmt.setInt(2, typeDef);
             rs = stmt.executeQuery();
-
-            power = rs.getDouble("power");
+            
+            if (rs.next()){
+                power = rs.getDouble("power");
+            }
 
         } catch (SQLException e) {
             Logger.getLogger(typeWeakenessDAO.class.getName()).log(Level.SEVERE, null, e);
